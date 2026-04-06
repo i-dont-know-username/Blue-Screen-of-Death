@@ -38,17 +38,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 5000)
     })
 })
-
-    const forbiddenKeys = ['c', 'u', 's', 'i', 'p']; 
-    
-    if (event.ctrlKey && forbiddenKeys.includes(event.key.toLowerCase())) {
-      event.preventDefault();
-      return false;
-    }
-
-    // Disable F12 (Developer Tools)
-    if (event.key === 'F12') {
-      event.preventDefault();
-      return false;
-    }
-  });
