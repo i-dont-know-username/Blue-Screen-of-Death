@@ -52,6 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearInterval(interval);
                 alert("wow you actually finished this 💀");
             }
-        }, 80); // smoother animation
+        }, 3000); // smoother animation
     }, { once: true }); // only trigger once
 });
