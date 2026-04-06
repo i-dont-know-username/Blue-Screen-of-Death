@@ -1,54 +1,57 @@
 document.addEventListener('DOMContentLoaded', () => {
     const front = document.getElementById('front');
-    const click = document.getElementById('click');
-    const body = document.documentElement;
-    const canvas = document.getElementById('myCanvas');
+    const clickText = document.getElementById('click');
     const counter = document.getElementById('counter');
+    const canvas = document.getElementById('myCanvas');
 
-    if (!front || !click || !canvas || !counter) {
-        console.error("Missing required elements in HTML");
+    // Prevent crashes if elements missing
+    if (!front || !clickText || !counter) {
+        console.error("Missing required elements");
         return;
     }
 
+    // Disable right click
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Disable text selection
+    document.addEventListener('selectstart', e => e.preventDefault());
+
     const enterFullscreen = () => {
         const el = document.documentElement;
-        if (el.requestFullscreen) el.requestFullscreen();
-        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-        else if (el.msRequestFullscreen) el.msRequestFullscreen();
+        if (el.requestFullscreen) return el.requestFullscreen();
+        if (el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
+        if (el.msRequestFullscreen) return el.msRequestFullscreen();
     };
 
-    const requestPointerLock = () => {
-        if (canvas.requestPointerLock) canvas.requestPointerLock();
-        else if (canvas.mozRequestPointerLock) canvas.mozRequestPointerLock();
-        else if (canvas.webkitRequestPointerLock) canvas.webkitRequestPointerLock();
+    const lockPointer = () => {
+        const el = canvas || document.body;
+        if (el.requestPointerLock) el.requestPointerLock();
     };
 
-    front.addEventListener('click', () => {
-        body.style.cursor = "none";
-        click.style.opacity = "0";
+    // IMPORTANT: attach click to FULL SCREEN AREA
+    document.body.addEventListener('click', () => {
+        // These MUST be inside a user gesture
+        enterFullscreen().then(() => {
+            lockPointer();
+        });
 
-        enterFullscreen();
-        requestPointerLock();
+        document.documentElement.style.cursor = "none";
+        clickText.style.opacity = "0";
 
-        // Remove front after 5 seconds
         setTimeout(() => {
             front.remove();
-        }, 5000);
+        }, 2000);
 
-        // Start counter after 5 seconds
-        setTimeout(() => {
-            let percent = 1;
+        // Start fake BSOD counter
+        let percent = 0;
+        const interval = setInterval(() => {
+            percent++;
+            counter.innerText = percent;
 
-            const interval = setInterval(() => {
-                percent++;
-                counter.innerText = percent;
-
-                if (percent >= 100) {
-                    clearInterval(interval);
-                    alert("wow you actually finished this 💀");
-                }
-            }, 10000);
-
-        }, 5000);
-    });
+            if (percent >= 100) {
+                clearInterval(interval);
+                alert("wow you actually finished this 💀");
+            }
+        }, 80); // smoother animation
+    }, { once: true }); // only trigger once
 });
